@@ -1,0 +1,26 @@
+# Ignore everything first
+*
+
+# Un-ignore the 3 Python files
+!artist.py
+!merge_chord_pdfs.py
+!print_chord.py
+
+# Also un-ignore necessary project files
+!pyproject.toml
+!README.md
+!.gitignore
+
+# Explicitly ignore specific files
+haha.html
+
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
