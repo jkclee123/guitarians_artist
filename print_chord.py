@@ -3,17 +3,16 @@
 print_chord.py
 
 Fetches a Guitarians chord print page and saves it as a PDF using Playwright and ReportLab.
-Usage: uv run print_chord.py
+Usage: uv run print_chord.py <folder_name> <clicks>
 """
 import sys
+import argparse
 from pathlib import Path
 from urllib.parse import unquote
 import re
 from playwright.sync_api import sync_playwright
 from pathlib import Path
 from PyPDF2 import PdfMerger
-
-folder_name = "bonus"
 
 def parse_chord_url(url):
     """Extract artist folder name and song name from Guitarians chord print URL."""
@@ -28,7 +27,7 @@ def parse_chord_url(url):
     return song_id
 
 
-def print_chord(url, output_path):
+def print_chord(url, output_path, clicks):
     """Fetch chord page and save as PDF at the specified path using Playwright's PDF generation."""
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -39,10 +38,8 @@ def print_chord(url, output_path):
         page.click('li.twoinoneBtn')
         page.wait_for_selector('li.fontLargerBtn')
         # page.click('li.fontSmallerBtn')
-        page.click('li.fontLargerBtn')
-        page.click('li.fontLargerBtn')
-        page.click('li.fontLargerBtn')
-        page.click('li.fontLargerBtn')
+        for _ in range(clicks):
+            page.click('li.fontLargerBtn')
         page.pdf(path=str(output_path))
         browser.close()
 
@@ -58,28 +55,28 @@ def preprocess_url(raw_url):
     return base 
 
 
-def process_urls_from_file(url_file):
+def process_urls_from_file(url_file, folder_name, clicks):
     """Process each URL from the given file."""
     with open(url_file, 'r', encoding='utf-8') as f:
         urls = [line.strip() for line in f if line.strip()]
-    
+
     for url in urls:
         # Preprocess raw URL to ensure correct print path and query
         processed_url = preprocess_url(url)
         try:
             # Parse URL to get artist and song names
             song_name = parse_chord_url(processed_url)
-            
+
             # Create output directory structure
             chord_dir = Path("chord")
             artist_dir = chord_dir / folder_name
             artist_dir.mkdir(parents=True, exist_ok=True)
-            
+
             # Set output path
             output_path = artist_dir / f"{song_name}.pdf"
-            
+
             # Generate PDF
-            print_chord(processed_url, output_path)
+            print_chord(processed_url, output_path, clicks)
             print(f"Saved PDF to {output_path}")
         except Exception as e:
             print(f"Error processing {url}: {str(e)}")
@@ -108,9 +105,18 @@ def merge_pdfs(folder_name):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Fetch Guitarians chord print pages and save as PDFs")
+    parser.add_argument("folder_name", help="Name of the folder to save PDFs in (e.g., 'batch 1')")
+    parser.add_argument("clicks", type=int, help="Number of times to click the font larger button")
+
+    args = parser.parse_args()
+    folder_name = args.folder_name
+    clicks = args.clicks
+
     url_file = "url.txt"
     if not Path(url_file).exists():
         print(f"Error: {url_file} not found")
         sys.exit(1)
-    process_urls_from_file(url_file) 
+
+    process_urls_from_file(url_file, folder_name, clicks)
     merge_pdfs(folder_name)

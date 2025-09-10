@@ -63,8 +63,12 @@ This will:
 Prepare a `url.txt` file with chord sheet URLs, then run:
 
 ```bash
-uv run print_chord.py
+uv run print_chord.py "batch 1" 5
 ```
+
+This command uses:
+- `"batch 1"` as the folder name for organizing PDFs
+- `5` as the number of font size increases
 
 This will:
 - Download each chord sheet as a PDF
@@ -122,19 +126,3 @@ The project includes data for popular Cantopop artists including:
 - **Artist Lists**: Plain text files with song names
 - **Chord Sheets**: High-quality PDFs optimized for printing
 - **Merged Collections**: Single PDF files combining multiple songs
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## 📝 License
-
-This project is for educational purposes. Please respect the terms of service of Guitarians.com and copyright laws when using chord sheets.
-
-## ⚠️ Disclaimer
-
-This tool is for personal use only. Ensure you comply with the website's terms of service and local copyright regulations when downloading and using chord sheets.
