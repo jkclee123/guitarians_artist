@@ -2,17 +2,14 @@
 """
 print_chord.py
 
-Fetches a Guitarians chord print page and saves it as a PDF using Playwright and ReportLab.
-Usage: uv run print_chord.py <folder_name> <clicks>
+Fetches a Guitarians chord print page and saves it as a PDF using Playwright.
+Usage: uv run print_chord.py -i <input_file> -o <output_file> [-clicks <number>]
 """
-import sys
 import argparse
 from pathlib import Path
 from urllib.parse import unquote
 import re
 from playwright.sync_api import sync_playwright
-from pathlib import Path
-from PyPDF2 import PdfMerger
 
 def parse_chord_url(url):
     """Extract artist folder name and song name from Guitarians chord print URL."""
@@ -52,71 +49,34 @@ def preprocess_url(raw_url):
     if '/chord/print/' not in base:
         base = base.replace('/chord/', '/chord/print/', 1)
     # Append default capo parameter
-    return base 
+    return base
 
 
-def process_urls_from_file(url_file, folder_name, clicks):
-    """Process each URL from the given file."""
-    with open(url_file, 'r', encoding='utf-8') as f:
-        urls = [line.strip() for line in f if line.strip()]
+def process_url_from_file(input_file, output_path, clicks):
+    """Process the URL from the given file and save as PDF."""
+    with open(input_file, 'r', encoding='utf-8') as f:
+        url = f.read().strip()
 
-    for url in urls:
-        # Preprocess raw URL to ensure correct print path and query
-        processed_url = preprocess_url(url)
-        try:
-            # Parse URL to get artist and song names
-            song_name = parse_chord_url(processed_url)
+    if not url:
+        raise ValueError(f"No URL found in {input_file}")
 
-            # Create output directory structure
-            chord_dir = Path("chord")
-            artist_dir = chord_dir / folder_name
-            artist_dir.mkdir(parents=True, exist_ok=True)
+    # Preprocess raw URL to ensure correct print path and query
+    processed_url = preprocess_url(url)
 
-            # Set output path
-            output_path = artist_dir / f"{song_name}.pdf"
-
-            # Generate PDF
-            print_chord(processed_url, output_path, clicks)
-            print(f"Saved PDF to {output_path}")
-        except Exception as e:
-            print(f"Error processing {url}: {str(e)}")
-
-
-def merge_pdfs(folder_name):
-    """Merge all PDFs in chord/{folder_name} into a single PDF."""
-    chord_dir = Path("chord") / folder_name
-    pdf_files = sorted(chord_dir.glob("*.pdf"))
-    if not pdf_files:
-        print(f"No PDF files found in {chord_dir}")
-        return
-    merger = PdfMerger()
-    for pdf in pdf_files:
-        merger.append(str(pdf))
-    output_file = chord_dir / f"{folder_name}.pdf"
-    merger.write(str(output_file))
-    merger.close()
-    print(f"Merged {len(pdf_files)} PDFs into {output_file}")
-    # Remove individual PDF files after merge
-    for pdf in pdf_files:
-        try:
-            pdf.unlink()
-        except Exception as e:
-            print(f"Failed to delete {pdf}: {e}")
+    # Generate PDF
+    print_chord(processed_url, output_path, clicks)
+    print(f"Saved PDF to {output_path}")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Fetch Guitarians chord print pages and save as PDFs")
-    parser.add_argument("folder_name", help="Name of the folder to save PDFs in (e.g., 'batch 1')")
-    parser.add_argument("clicks", type=int, help="Number of times to click the font larger button")
+    parser = argparse.ArgumentParser(description="Fetch Guitarians chord print page and save as PDF")
+    parser.add_argument("-i", "--input", required=True, help="Input text file containing the chord URL")
+    parser.add_argument("-o", "--output", required=True, help="Output PDF file path")
+    parser.add_argument("-clicks", "--clicks", type=int, default=0, help="Number of times to click the font larger button (default: 0)")
 
     args = parser.parse_args()
-    folder_name = args.folder_name
+    input_file = args.input
+    output_path = Path(args.output)
     clicks = args.clicks
 
-    url_file = "url.txt"
-    if not Path(url_file).exists():
-        print(f"Error: {url_file} not found")
-        sys.exit(1)
-
-    process_urls_from_file(url_file, folder_name, clicks)
-    merge_pdfs(folder_name)
+    process_url_from_file(input_file, output_path, clicks)
