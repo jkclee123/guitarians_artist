@@ -26,21 +26,21 @@ Scrape song lists from Guitarians artist profile pages.
 uv run list_artist_songs.py
 ```
 
-**Note:** Currently configured to scrape 張敬軒 (Hins Cheung) artist page. Edit the URL in the script to change the target artist.
+**Note:** Edit the URL in the script to change the target artist.
 
 ### 3. unicode_fix.py
 Fix URL-encoded Unicode characters in text files to display properly.
 
 ```bash
-uv run unicode_fix.py -o <file_path>
+uv run unicode_fix.py -i <file_path>
 ```
 
 **Parameters:**
-- `-o, --output`: Path to the text file to fix Unicode characters in (required)
+- `-i, --input`: Path to the text file to fix Unicode characters in (required)
 
 **Example:**
 ```bash
-uv run unicode_fix.py -o songs/size1.txt
+uv run unicode_fix.py -i songs/size1.txt
 ```
 
 ### 4. merge_pdfs.py

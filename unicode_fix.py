@@ -3,7 +3,7 @@
 unicode_fix.py
 
 Rewrites a text file with URL-encoded Unicode characters to display them correctly.
-Usage: uv run unicode_fix.py -o <file_path>
+Usage: uv run unicode_fix.py -i <file_path>
 """
 import argparse
 from pathlib import Path
@@ -44,13 +44,13 @@ def main():
         description="Fix URL-encoded Unicode characters in text files to display properly"
     )
     parser.add_argument(
-        "-o", "--output",
+        "-i", "--input",
         required=True,
         help="Path to the text file to fix Unicode characters in"
     )
 
     args = parser.parse_args()
-    file_path = Path(args.output)
+    file_path = Path(args.input)
 
     if not file_path.exists():
         print(f"Error: File '{file_path}' does not exist")
