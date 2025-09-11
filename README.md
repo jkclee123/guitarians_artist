@@ -1,128 +1,69 @@
-# 🎸 Guitarians Artist Chord Scraper
+# Guitarians Tools
 
-A Python tool for scraping and organizing guitar chord sheets from [Guitarians.com](https://zh-hk.guitarians.com), a popular Cantopop guitar chord resource.
+## Scripts
 
-## 📋 Overview
-
-This project provides automated tools to:
-- Scrape song lists from artist profile pages
-- Download guitar chord sheets as PDF files
-- Merge multiple chord sheets into organized collections
-- Organize data by artists and batches
-
-## 🚀 Features
-
-- **Artist Song Scraper**: Extract complete song lists from artist profiles
-- **PDF Chord Downloader**: Convert chord sheets to high-quality PDFs with customizable formatting
-- **Batch PDF Merger**: Combine multiple chord sheets into single organized documents
-- **Automated Organization**: Smart folder structure for artists and chord collections
-
-## 📦 Dependencies
-
-- Python 3.13+
-- [uv](https://github.com/astral-sh/uv) package manager
-- Playwright for browser automation
-- BeautifulSoup4 for HTML parsing
-- PyPDF2 for PDF manipulation
-
-## 🛠️ Installation
-
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd guitarians-artist
-```
-
-2. Install dependencies using uv:
-```bash
-uv sync
-```
-
-3. Install Playwright browsers:
-```bash
-uv run playwright install
-```
-
-## 📖 Usage
-
-### 1. Scrape Artist Song List
-
-Run the artist scraper to get all songs from a specific artist:
+### 1. url_to_pdf.py
+Convert Guitarians chord URLs to PDF files.
 
 ```bash
-uv run artist.py
+uv run url_to_pdf.py -i <input_file> -o <output_file> [-clicks <number>]
 ```
 
-This will:
-- Scrape the configured artist page (currently set to 張敬軒/Hins Cheung)
-- Extract all song names
-- Save them to `artist/{artist_name}.txt`
+**Parameters:**
+- `-i, --input`: Input text file containing the chord URL (required)
+- `-o, --output`: Output PDF file path (required)
+- `-clicks, --clicks`: Number of times to click the font larger button (default: 0)
 
-### 2. Download Chord Sheets
+**Example:**
+```bash
+uv run url_to_pdf.py -i songs/eason.txt -o eason_chord.pdf -clicks 3
+```
 
-Prepare a `url.txt` file with chord sheet URLs, then run:
+### 2. list_artist_songs.py
+Scrape song lists from Guitarians artist profile pages.
 
 ```bash
-uv run print_chord.py "batch 1" 5
+uv run list_artist_songs.py
 ```
 
-This command uses:
-- `"batch 1"` as the folder name for organizing PDFs
-- `5` as the number of font size increases
+**Note:** Currently configured to scrape 張敬軒 (Hins Cheung) artist page. Edit the URL in the script to change the target artist.
 
-This will:
-- Download each chord sheet as a PDF
-- Apply formatting optimizations (larger font, two-in-one layout)
-- Save PDFs to `chord/{folder_name}/`
-- Merge all PDFs into a single file
-
-### 3. Merge Existing Chord PDFs
-
-To merge chord sheets from batch folders:
+### 3. unicode_fix.py
+Fix URL-encoded Unicode characters in text files to display properly.
 
 ```bash
-uv run merge_chord_pdfs.py
+uv run unicode_fix.py -o <file_path>
 ```
 
-This will:
-- Find all `batch_*` folders in the `chord/` directory
-- Process PDFs in numerical order
-- Create a merged `merged_chord_sheets.pdf`
+**Parameters:**
+- `-o, --output`: Path to the text file to fix Unicode characters in (required)
 
-## 📁 Project Structure
-
-```
-guitarians-artist/
-├── artist/                 # Artist song lists (scraped data)
-├── songs/                  # Individual song URLs
-├── chord/                  # Generated PDF chord sheets
-├── artist.py              # Artist profile scraper
-├── print_chord.py         # PDF chord downloader
-├── merge_chord_pdfs.py    # PDF merger utility
-├── url.txt                # Input URLs for downloading
-└── pyproject.toml         # Project configuration
+**Example:**
+```bash
+uv run unicode_fix.py -o songs/size1.txt
 ```
 
-## 🔧 Configuration
+### 4. merge_pdfs.py
+Merge multiple PDF files into a single PDF.
 
-### Artist Scraper (`artist.py`)
-- Edit the `url` variable to change the target artist
-- Supports any Guitarians.com artist profile URL
+```bash
+uv run pdfs/merge_pdfs.py -o <output_file> [-i <input_file> | -dir <directory> | <pdf_files>...]
+```
 
-### Chord Downloader (`print_chord.py`)
-- Modify `folder_name` variable to organize outputs
-- Add chord URLs to `url.txt` (one per line)
-- Customize PDF formatting in the `print_chord()` function
+**Parameters:**
+- `-o, --output`: Output PDF file path (required)
+- `-i, --input`: Text file containing list of PDF files to merge (one per line)
+- `-dir, --directory`: Directory containing PDF files to merge
+- `<pdf_files>`: PDF files to merge directly (alternative to -i or -dir)
 
-## 🎵 Supported Artists
+**Examples:**
+```bash
+# Merge PDFs from a text file list
+uv run pdfs/merge_pdfs.py -o merged.pdf -i pdf_list.txt
 
-The project includes data for popular Cantopop artists including:
-- 張敬軒 (Hins Cheung)
-- 陳奕迅 (Eason Chan)
-- And many more in the `songs/` directory
+# Merge all PDFs in a directory
+uv run pdfs/merge_pdfs.py -o combined.pdf -dir ./chord/
 
-## 📄 Output Formats
-
-- **Artist Lists**: Plain text files with song names
-- **Chord Sheets**: High-quality PDFs optimized for printing
-- **Merged Collections**: Single PDF files combining multiple songs
+# Merge specific PDF files directly
+uv run pdfs/merge_pdfs.py -o final.pdf file1.pdf file2.pdf file3.pdf
+```
