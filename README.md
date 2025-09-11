@@ -59,11 +59,11 @@ uv run pdfs/merge_pdfs.py -o <output_file> [-i <input_file> | -dir <directory> |
 **Examples:**
 ```bash
 # Merge PDFs from a text file list
-uv run pdfs/merge_pdfs.py -o merged.pdf -i pdf_list.txt
+uv run merge_pdfs.py -o merged.pdf -i pdf_list.txt
 
 # Merge all PDFs in a directory
-uv run pdfs/merge_pdfs.py -o combined.pdf -dir ./chord/
+uv run merge_pdfs.py -o combined.pdf -dir ./chord/
 
 # Merge specific PDF files directly
-uv run pdfs/merge_pdfs.py -o final.pdf file1.pdf file2.pdf file3.pdf
+uv run merge_pdfs.py -o final.pdf file1.pdf file2.pdf file3.pdf
 ```
