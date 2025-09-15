@@ -1,16 +1,18 @@
-# Guitarians Tools
+# Guitarians Scraping Tools
+
+A collection of Python scripts used to scrape chord sheets from Guitarians.com, a popular Cantopop chord database. These tools help automate the process of collecting, converting, and organizing guitar chord sheets into PDF format.
 
 ## Scripts
 
 ### 1. url_to_pdf.py
-Convert Guitarians chord URLs to PDF files.
+Convert Guitarians URLs to PDF files.
 
 ```bash
 uv run url_to_pdf.py -i <input_file> -o <output_file> [-clicks <number>]
 ```
 
 **Parameters:**
-- `-i, --input`: Input text file containing the chord URL (required)
+- `-i, --input`: Input text file containing the URL (required)
 - `-o, --output`: Output PDF file path (required)
 - `-clicks, --clicks`: Number of times to click the font larger button (default: 0)
 
@@ -23,10 +25,16 @@ uv run url_to_pdf.py -i songs/eason.txt -o eason_chord.pdf -clicks 3
 Scrape song lists from Guitarians artist profile pages.
 
 ```bash
-uv run list_artist_songs.py
+uv run list_artist_songs.py <artist_url>
 ```
 
-**Note:** Edit the URL in the script to change the target artist.
+**Parameters:**
+- `<artist_url>`: URL of the Guitarians artist page to scrape (required)
+
+**Example:**
+```bash
+uv run list_artist_songs.py "https://zh-hk.guitarians.com/artist/{artist-id}-{artist-name}"
+```
 
 ### 3. unicode_fix.py
 Fix URL-encoded Unicode characters in text files to display properly.

@@ -3,10 +3,10 @@ from bs4 import BeautifulSoup
 from pathlib import Path
 from urllib.parse import unquote
 import re
+import argparse
 
-def scrape_song_names():
+def scrape_song_names(url):
     # URL of the target webpage
-    url = "https://zh-hk.guitarians.com/artist/45-%E5%BC%B5%E6%95%AC%E8%BB%92"
     m = re.search(r"/artist/\d+-(.+)$", url)
     if not m:
         raise ValueError(f"Could not extract artist name from URL: {url}")
@@ -57,4 +57,8 @@ def scrape_song_names():
     print(f"\nSuccessfully wrote {len(song_names)} song names to {output_file}")
 
 if __name__ == "__main__":
-    scrape_song_names()
+    parser = argparse.ArgumentParser(description='Scrape song lists from Guitarians artist profile pages.')
+    parser.add_argument('url', help='URL of the Guitarians artist page to scrape')
+
+    args = parser.parse_args()
+    scrape_song_names(args.url)
